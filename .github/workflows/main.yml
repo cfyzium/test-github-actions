@@ -5,6 +5,7 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
+    container: ${{ matrix.container }}
     strategy:
       matrix:
         container: [quay.io/pypa/manylinux1_x86_64, quay.io/pypa/manylinux2014_i686]
