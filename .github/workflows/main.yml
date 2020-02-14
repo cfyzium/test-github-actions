@@ -5,7 +5,10 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: quay.io/pypa/manylinux1_x86_64
+    strategy:
+      matrix:
+        container: [quay.io/pypa/manylinux1_x86_64, quay.io/pypa/manylinux2014_i686]
+    #container: quay.io/pypa/manylinux1_x86_64
     steps:
     - name: Run a multi-line script
       run: |
