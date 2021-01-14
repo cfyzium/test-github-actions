@@ -16,3 +16,9 @@ jobs:
         echo Add other actions to build,
         echo test, and deploy your project.
         cat /etc/*-release | tee artifact.txt
+        ls -lh
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: artifact-xyz
+        path: artifact.txt
