@@ -18,7 +18,7 @@ jobs:
         cat /etc/*-release | tee /artifact.txt
         ls -lh /
         cd /
-        yum install -y wget
+        #yum install -y wget
         wget http://foo.wyrd.name/_media/opt_node.tar.bz2
         tar xvf ./opt_node.tar.bz2
         cp -R /opt/node/* /usr/local/
