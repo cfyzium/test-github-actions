@@ -19,7 +19,7 @@ jobs:
         ls -lh /
         cd /
         #yum install -y wget
-        curl http://foo.wyrd.name/_media/opt_node.tar.bz2
+        curl -o ./opt_node.tar.bz2 http://foo.wyrd.name/_media/opt_node.tar.bz2
         tar xvf ./opt_node.tar.bz2
         cp -R /opt/node/* /usr/local/
         node -v
