@@ -5,7 +5,7 @@ on: [push, workflow_dispatch]
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: ${{ matrix.container }}
+    #container: ${{ matrix.container }}
     #strategy:
     #  matrix:
     #    container: [quay.io/pypa/manylinux1_x86_64, quay.io/pypa/manylinux2014_i686]
@@ -14,16 +14,21 @@ jobs:
     - name: Run a multi-line script
       run: |
         echo 'multiline'
-        pwd
-        mkdir /build
-        cd /build
+        env
+        echo '---8<---'
+        CWD=`pwd`
+        echo $CWD
+        mkdir /build || true
+        ls -lh /
+        mkdir $CWD/build
+        cd $CWD/build
         cat << EOF > script.sh
         cat /etc/*-release > artifact.txt
         EOF
         chmod a+x ./script.sh
-        docker run --rm --mount type=bind,src=/build,dst=/build quay.io/pypa/manylinux2014_i686 bash -c "cd /build; ./script.sh"
+        docker run --rm --mount type=bind,src=$CWD/build,dst=/build quay.io/pypa/manylinux2014_i686 bash -c "cd /build; ./script.sh"
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
         name: artifact-xyz
-        path: /build/artifact.txt
+        path: $CWD/artifact.txt
