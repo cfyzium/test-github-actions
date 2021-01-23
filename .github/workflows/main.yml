@@ -6,25 +6,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: ${{ matrix.container }}
-    strategy:
-      matrix:
-        container: [quay.io/pypa/manylinux1_x86_64, quay.io/pypa/manylinux2014_i686]
+    #strategy:
+    #  matrix:
+    #    container: [quay.io/pypa/manylinux1_x86_64, quay.io/pypa/manylinux2014_i686]
     #container: quay.io/pypa/manylinux1_x86_64
     steps:
     - name: Run a multi-line script
       run: |
-        echo Add other actions to build,
-        echo test, and deploy your project.
-        cat /etc/*-release | tee /artifact.txt
-        ls -lh /
-        cd /
-        #yum install -y wget
-        curl -o ./opt_node.tar.bz2 http://foo.wyrd.name/_media/opt_node.tar.bz2
-        tar xvf ./opt_node.tar.bz2
-        cp -R /opt/node/* /usr/local/
-        node -v
+        echo 'multiline'
+        pwd
+        mkdir /build
+        cd /build
+        cat << EOF > script.sh
+        cat /etc/*-release > artifact.txt
+        EOF
+        chmod a+x ./script.sh
+        docker run --rm --mount type=bind,src=/build,dst=/build quay.io/pypa/manylinux2014_i686 bash -c "cd /build; ./script.sh"
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
         name: artifact-xyz
-        path: /artifact.txt
+        path: /build/artifact.txt
