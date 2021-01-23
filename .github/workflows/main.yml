@@ -27,8 +27,9 @@ jobs:
         EOF
         chmod a+x ./script.sh
         docker run --rm --mount type=bind,src=$CWD/build,dst=/build quay.io/pypa/manylinux2014_i686 bash -c "cd /build; ./script.sh"
+        cat ./artifact.txt || true
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
         name: artifact-xyz
-        path: $CWD/artifact.txt
+        path: ${{ github.workspace }}/build/artifact.txt
