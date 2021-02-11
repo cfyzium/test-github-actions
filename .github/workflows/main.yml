@@ -13,23 +13,24 @@ jobs:
     steps:
     - name: Run a multi-line script
       run: |
-        echo 'multiline'
-        env
+        echo ${{ github.workspace }}
+        pwd
+        ls -lh
         echo '---8<---'
-        CWD=`pwd`
-        echo $CWD
-        mkdir /build || true
-        ls -lh /
-        mkdir $CWD/build
-        cd $CWD/build
+        git clone https://github.com/cfyzium/bearlibterminal
         cat << EOF > script.sh
-        cat /etc/*-release > artifact.txt
+        rm -rf build
+        mkdir build
+        cd build
+        cmake ../bearlibterminal
+        make
         EOF
         chmod a+x ./script.sh
-        docker run --rm --mount type=bind,src=$CWD/build,dst=/build quay.io/pypa/manylinux2014_i686 bash -c "cd /build; ./script.sh"
-        cat ./artifact.txt || true
+        docker run --rm --mount type=bind,src=`pwd`,dst=/workspace quay.io/pypa/manylinux2014_x86_64 bash -c "cd /workspace; ./script.sh"
+        docker run --rm --mount type=bind,src=`pwd`,dst=/workspace quay.io/pypa/manylinux2014_i686 bash -c "cd /workspace; ./script.sh"
+        tar cvfz artifacts.tgz bearlibterminal/Output
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
         name: artifact-xyz
-        path: ${{ github.workspace }}/build/artifact.txt
+        path: ${{ github.workspace }}/artifacts.tgz
