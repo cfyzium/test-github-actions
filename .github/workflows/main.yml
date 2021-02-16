@@ -3,7 +3,7 @@ name: CI
 on: [push, workflow_dispatch]
 
 jobs:
-  build:
+  build-linux:
     runs-on: ubuntu-latest
     #container: ${{ matrix.container }}
     #strategy:
@@ -11,6 +11,8 @@ jobs:
     #    container: [quay.io/pypa/manylinux1_x86_64, quay.io/pypa/manylinux2014_i686]
     #container: quay.io/pypa/manylinux1_x86_64
     steps:
+    - name: Checkout
+      uses: actions/checkout@v2
     - name: Run a multi-line script
       run: |
         echo ${{ github.workspace }}
@@ -32,5 +34,19 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: artifact-xyz
+        name: linux-binaries
         path: ${{ github.workspace }}/artifacts.tgz
+    - name: Install MinGW
+      run: sudo apt install gcc-mingw-w64 g++-mingw-w64
+    - name: Build Windows binaries
+      run: |
+        rm -rf build
+        mkdir build
+        cd build
+        CC=x86_64-w64-mingw32-gcc-posix CXX=x86_64-w64-mingw32-g++-posix cmake ../bearlibterminal
+        make
+    - name: Upload MinGW artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: mingw-binaries
+        path: ${{ github.workspace }}/bearlibterminal/Output/Windows64
