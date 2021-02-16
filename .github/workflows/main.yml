@@ -20,7 +20,7 @@ jobs:
         git clone https://github.com/cfyzium/bearlibterminal
         cat << EOF > script.sh
           #!/bin/bash
-          mkdir build && cd $_
+          mkdir build && cd \$_
           cmake ../workspace/bearlibterminal
           make
         EOF
@@ -49,7 +49,7 @@ jobs:
         EOF
         cat << EOF > script.sh
           #!/bin/bash
-          rm -rf build && mkdir build && cd $_
+          rm -rf build && mkdir build && cd \$_
           cmake -DMINGW_ARCH=\$1 -DCMAKE_TOOLCHAIN_FILE=../mingw.cmake ../bearlibterminal
           make
         EOF
