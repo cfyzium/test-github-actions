@@ -90,3 +90,19 @@ jobs:
       with:
         name: python-wheels
         path: ${{ github.workspace }}/*.whl
+        
+  build-wheels:
+    runs-on: ubuntu-20.04
+    needs: build-linux
+    steps:
+      - name: Test exporting the env
+        run: export SOME_VARIABLE=foobarbaz
+      - name: Download Linux binaries
+        uses: actions/download-artifact@v2
+        with:
+          name: linux-binaries
+      - name: Look around
+        run: |
+          ls -lh
+          echo $SOME_VARIABLE
+          echo '---8<---'
