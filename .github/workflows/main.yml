@@ -14,6 +14,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Run a multi-line script
+      if: ${{ false }}
       run: |
         pwd
         ls -lh
@@ -30,6 +31,7 @@ jobs:
         docker run --rm --mount type=bind,src=`pwd`,dst=/workspace quay.io/pypa/manylinux2014_i686 bash -c "workspace/script.sh"
         tar cvfz artifacts.tgz -C bearlibterminal/Output Linux32 Linux64
     - name: Upload artifacts
+      if: ${{ false }}
       uses: actions/upload-artifact@v2
       with:
         name: linux-binaries
@@ -55,8 +57,11 @@ jobs:
           make
         EOF
         chmod a+x ./script.sh
-        mkdir -p bearlibterminal/Output/Windows32
-        mkdir -p bearlibterminal/Output/Windows64
+        ls -lh
+        ls -lh bearlibterminal/Output
+        sudo chmod a+rwx bearlibterminal/Output
+        #sudo mkdir -p bearlibterminal/Output/Windows32
+        #sudo mkdir -p bearlibterminal/Output/Windows64
         ./script.sh x86_64
         ./script.sh i686
     - name: Upload MinGW artifacts
