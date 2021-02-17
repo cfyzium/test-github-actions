@@ -32,6 +32,8 @@ jobs:
         docker run --rm --mount type=bind,src=`pwd`,dst=/workspace quay.io/pypa/manylinux2014_x86_64 bash -c "workspace/script.sh"
         docker run --rm --mount type=bind,src=`pwd`,dst=/workspace quay.io/pypa/manylinux2014_i686 bash -c "workspace/script.sh"
         tar cvfz artifacts.tgz -C bearlibterminal/Output Linux32 Linux64
+        chmod a+rwx bearlibterminal/Output
+        chmod -R a+r bearlibterminal/Output/Linux*
     - name: Upload artifacts
       #if: ${{ false }}
       uses: actions/upload-artifact@v2
@@ -59,11 +61,6 @@ jobs:
           make
         EOF
         chmod a+x ./script.sh
-        ls -lh
-        ls -lh bearlibterminal/Output || true
-        sudo chmod a+rwx bearlibterminal/Output || true
-        #sudo mkdir -p bearlibterminal/Output/Windows32
-        #sudo mkdir -p bearlibterminal/Output/Windows64
         ./script.sh x86_64
         ./script.sh i686
     - name: Upload MinGW artifacts
@@ -71,3 +68,25 @@ jobs:
       with:
         name: mingw-binaries
         path: ${{ github.workspace }}/bearlibterminal/Output/Windows*
+    - name: Install pip/wheel
+      run: sudo apt install python3-pip python3-wheel
+    - name: Build Python wheels
+      run: |
+        cat << EOF > build-wheel.sh
+          #!/bin/bash
+          cp -R bearlibterminal/Terminal/Include/Python ./
+          cp bearlibterminal/CHANGELOG.md Python/
+          cp \$1 Python/bearlibterminal/
+          pip3 wheel --build-option "--python-tag=py2.py3" --build-option "--plat-name=\$2" Python
+          rm -rf Python
+        EOF
+        chmod a+x build-wheel.sh
+        ./build-wheel.sh bearlibterminal/Output/Linux32/libBearLibTerminal.so manylinux2014_i636
+        ./build-wheel.sh bearlibterminal/Output/Linux64/libBearLibTerminal.so manylinux2014_x86_64
+        ./build-wheel.sh bearlibterminal/Output/Windows32/BearLibTerminal.dll win32
+        ./build-wheel.sh bearlibterminal/Output/Windows64/BearLibTerminal.dll win_amd64
+    - name: Upload Python wheels
+      uses: actions/upload-artifact@v2
+      with:
+        name: python-wheels
+        path: ${{ github.workspace }}/*.whl
