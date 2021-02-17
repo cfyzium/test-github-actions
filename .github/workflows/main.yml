@@ -77,12 +77,12 @@ jobs:
           cp -R bearlibterminal/Terminal/Include/Python ./
           cp bearlibterminal/CHANGELOG.md Python/
           cp \$1 Python/bearlibterminal/
-          pip3 wheel --build-option "--python-tag=py2.py3" --build-option "--plat-name=\$2" ./Python
+          pip3 wheel --build-option "--python-tag=py2.py3" --build-option "--plat-name=\$2" -w ./ ./Python
           rm -rf Python
         EOF
         chmod a+x build-wheel.sh
-        ./build-wheel.sh bearlibterminal/Output/Linux32/libBearLibTerminal.so manylinux2014_i636
-        ./build-wheel.sh bearlibterminal/Output/Linux64/libBearLibTerminal.so manylinux2014_x86_64
+        ./build-wheel.sh bearlibterminal/Output/Linux32/libBearLibTerminal.so manylinux1_i636
+        ./build-wheel.sh bearlibterminal/Output/Linux64/libBearLibTerminal.so manylinux1_x86_64
         ./build-wheel.sh bearlibterminal/Output/Windows32/BearLibTerminal.dll win32
         ./build-wheel.sh bearlibterminal/Output/Windows64/BearLibTerminal.dll win_amd64
     - name: Upload Python wheels
