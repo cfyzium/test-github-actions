@@ -4,7 +4,7 @@ on: [push, workflow_dispatch]
 
 jobs:
   build-linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     #container: ${{ matrix.container }}
     #strategy:
     #  matrix:
@@ -15,6 +15,7 @@ jobs:
       uses: actions/checkout@v2
     - name: Run a multi-line script
       run: |
+        pwd
         ls -lh
         echo '---8<---'
         git clone https://github.com/cfyzium/bearlibterminal
@@ -27,7 +28,7 @@ jobs:
         chmod a+x ./script.sh
         docker run --rm --mount type=bind,src=`pwd`,dst=/workspace quay.io/pypa/manylinux2014_x86_64 bash -c "workspace/script.sh"
         docker run --rm --mount type=bind,src=`pwd`,dst=/workspace quay.io/pypa/manylinux2014_i686 bash -c "workspace/script.sh"
-        tar cvfz artifacts.tgz bearlibterminal/Output/Linux*
+        tar cvfz artifacts.tgz -C bearlibterminal/Output Linux32 Linux64
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
@@ -54,6 +55,8 @@ jobs:
           make
         EOF
         chmod a+x ./script.sh
+        mkdir -p bearlibterminal/Output/Windows32
+        mkdir -p bearlibterminal/Output/Windows64
         ./script.sh x86_64
         ./script.sh i686
     - name: Upload MinGW artifacts
