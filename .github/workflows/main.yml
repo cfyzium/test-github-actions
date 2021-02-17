@@ -77,7 +77,7 @@ jobs:
           cp -R bearlibterminal/Terminal/Include/Python ./
           cp bearlibterminal/CHANGELOG.md Python/
           cp \$1 Python/bearlibterminal/
-          pip3 wheel --build-option "--python-tag=py2.py3" --build-option "--plat-name=\$2" Python
+          pip3 wheel --build-option "--python-tag=py2.py3" --build-option "--plat-name=\$2" ./Python
           rm -rf Python
         EOF
         chmod a+x build-wheel.sh
