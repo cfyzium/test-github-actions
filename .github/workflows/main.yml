@@ -13,13 +13,15 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Run a multi-line script
-      if: ${{ false }}
+    - name: Checkout source
       run: |
         pwd
         ls -lh
         echo '---8<---'
         git clone https://github.com/cfyzium/bearlibterminal
+    - name: Build Linux binaries
+      #if: ${{ false }}
+      run: |
         cat << EOF > script.sh
           #!/bin/bash
           mkdir build && cd \$_
@@ -31,7 +33,7 @@ jobs:
         docker run --rm --mount type=bind,src=`pwd`,dst=/workspace quay.io/pypa/manylinux2014_i686 bash -c "workspace/script.sh"
         tar cvfz artifacts.tgz -C bearlibterminal/Output Linux32 Linux64
     - name: Upload artifacts
-      if: ${{ false }}
+      #if: ${{ false }}
       uses: actions/upload-artifact@v2
       with:
         name: linux-binaries
@@ -58,8 +60,8 @@ jobs:
         EOF
         chmod a+x ./script.sh
         ls -lh
-        ls -lh bearlibterminal/Output
-        sudo chmod a+rwx bearlibterminal/Output
+        ls -lh bearlibterminal/Output || true
+        sudo chmod a+rwx bearlibterminal/Output || true
         #sudo mkdir -p bearlibterminal/Output/Windows32
         #sudo mkdir -p bearlibterminal/Output/Windows64
         ./script.sh x86_64
