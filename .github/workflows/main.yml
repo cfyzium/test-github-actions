@@ -80,7 +80,7 @@ jobs:
       #  name: linux-binaries
     - name: Unpack Artifacts
       run: |
-        tar xvf artifacts.tar
+        tar xvf linux-binaries/artifacts.tar -C linux-binaries
         ls -lh
         find .
     - name: Build Python wheels
@@ -94,10 +94,10 @@ jobs:
           rm -rf Python
         EOF
         chmod a+x build-wheel.sh
-        ./build-wheel.sh Linux32/libBearLibTerminal.so manylinux1_i636
-        ./build-wheel.sh Linux64/libBearLibTerminal.so manylinux1_x86_64
-        ./build-wheel.sh Windows32/BearLibTerminal.dll win32
-        ./build-wheel.sh Windows64/BearLibTerminal.dll win_amd64
+        ./build-wheel.sh linux-binaries/Linux32/libBearLibTerminal.so manylinux1_i636
+        ./build-wheel.sh linux-binaries/Linux64/libBearLibTerminal.so manylinux1_x86_64
+        ./build-wheel.sh mingw-binaries/Windows32/BearLibTerminal.dll win32
+        ./build-wheel.sh mingw-binaries/Windows64/BearLibTerminal.dll win_amd64
     - name: Upload Python wheels
       uses: actions/upload-artifact@v2
       with:
