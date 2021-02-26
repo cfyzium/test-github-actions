@@ -66,9 +66,28 @@ jobs:
       with:
         name: mingw-binaries
         path: ${{ github.workspace }}/bearlibterminal/Output/Windows*
+  build-macos:
+    runs-on: macos-10.15
+    steps:
+    - name: Checkout source
+      run: git clone https://github.com/cfyzium/bearlibterminal
+    - name: Build macOS binaries
+      run: |
+        mkdir build && cd $_
+        export CFLAGS=-DGL_SILENCE_DEPRECATION
+        export CXXFLAGS=-DGL_SILENCE_DEPRECATION
+        cmake ../bearlibterminal
+        make
+        cd ..
+        tar cvf artifacts.tar -C bearlibterminal/Output Darwin64
+    - name: Upload macOS artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: macos-binaries
+        path: ${{ github.workspace }}/artifacts.tar
   build-wheels:
     runs-on: ubuntu-20.04
-    needs: [build-linux, build-mingw]
+    needs: [build-linux, build-mingw, build-macos]
     steps:
     - name: Checkout source
       run: git clone https://github.com/cfyzium/bearlibterminal
@@ -81,8 +100,9 @@ jobs:
     - name: Unpack Artifacts
       run: |
         tar xvf linux-binaries/artifacts.tar -C linux-binaries
+        tar xvf macos-binaries/artifacts.tar -C macos-binaries
         ls -lh
-        find .
+        find *-binaries
     - name: Build Python wheels
       run: |
         cat << EOF > build-wheel.sh
@@ -98,6 +118,7 @@ jobs:
         ./build-wheel.sh linux-binaries/Linux64/libBearLibTerminal.so manylinux1_x86_64
         ./build-wheel.sh mingw-binaries/Windows32/BearLibTerminal.dll win32
         ./build-wheel.sh mingw-binaries/Windows64/BearLibTerminal.dll win_amd64
+        ./build-wheel.sh macos-binaries/Darwin64/libBearLibTerminal.dylib macosx_10_9_universal
     - name: Upload Python wheels
       uses: actions/upload-artifact@v2
       with:
