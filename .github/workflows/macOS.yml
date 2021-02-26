@@ -1,0 +1,22 @@
+name: macOS_test
+
+on: workflow_dispatch
+
+jobs:
+  build-macos:
+    runs-on: macos-10.15
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Checkout source
+      run: git clone https://github.com/cfyzium/bearlibterminal
+    - name: Look around
+      run: |
+        cmake --version || true
+        cmake -h || true
+        gcc --version || true
+        mkdir build
+        cd build
+        cmake ../bearlibterminal
+        ls -lh
+        make
