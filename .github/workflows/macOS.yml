@@ -4,19 +4,33 @@ on: workflow_dispatch
 
 jobs:
   build-macos:
-    runs-on: macos-10.15
+    strategy:
+      matrix:
+        os: [macos-13, macos-15]
+    runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Checkout source
-      run: git clone https://github.com/cfyzium/bearlibterminal
+    #- name: Checkout source
+    #  run: git clone https://github.com/cfyzium/bearlibterminal
     - name: Look around
+      shell: bash
       run: |
         cmake --version || true
-        cmake -h || true
+        cmake -G || true
         gcc --version || true
-        mkdir build
-        cd build
-        cmake ../bearlibterminal
+        pwd
         ls -lh
-        make
+        system_profiler SPDisplaysDataType
+        open ~/
+        screencapture screenshot.png
+        #mkdir build
+        #cd build
+        #cmake ../bearlibterminal
+        #ls -lh
+        #make
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ matrix.os }}-screenshot
+        path: ${{ github.workspace }}/screenshot.png
